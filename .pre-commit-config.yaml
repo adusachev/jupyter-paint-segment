@@ -1,0 +1,19 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ipynb-cleaner
+        name: Notebook Output Cleaner
+        description: This hook clears Jupyter Notebook output and metadata
+        entry: ./scripts/ipynb-cleaner.sh
+        language: script
+        types: [file]
+
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+    - id: black
+  
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
