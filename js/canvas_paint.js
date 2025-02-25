@@ -4,9 +4,9 @@ function render({ model, el }) {
       <div class="all">
         <div class="tool-panel">
           <div class="tool-buttons">
-            <button id="rectangle-btn" class="tool-btn">A</button>
-            <button id="brush-btn" class="tool-btn">B</button>
-            <button id="eraser-btn" class="tool-btn">C</button>
+            <button id="rectangle-btn" class="tool-btn"></button>
+            <button id="brush-btn" class="tool-btn"></button>
+            <button id="eraser-btn" class="tool-btn"></button>
           </div>
           
           <div class="line-width-control">
@@ -16,8 +16,8 @@ function render({ model, el }) {
         </div>
         
         <div class="boards">
-          <canvas id="background-canvas" width="500" height="300"></canvas>
-          <canvas id="drawing-canvas" width="500" height="300"></canvas>
+          <canvas id="background-canvas" class="canvases" width="1000" height="800"></canvas>
+          <canvas id="drawing-canvas" class="canvases" width="1000" height="800"></canvas>
         </div>
 
         <div class="bottom-panel">
@@ -27,8 +27,8 @@ function render({ model, el }) {
           </div>
 
           <div class="control-buttons">
-            <!-- <button id="save-btn" class="btn">Save</button> -->
-            <button id="clear-btn" class="btn">Clear</button>
+            <!-- <button id="save-btn" class="control-btn">Save</button> -->
+            <button id="clear-btn" class="control-btn">Clear</button>
           </div>
         </div>
       </div>
