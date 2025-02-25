@@ -12,3 +12,4 @@ dev_notebooks/
 .pytest_cache
 .vscode/
 .mypy_cache/
+.ipynb_checkpoints/

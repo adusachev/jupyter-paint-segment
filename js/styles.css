@@ -1,0 +1,67 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+
+.container {
+    display: grid;
+    justify-content: start;
+    margin-top: 2%;
+    margin-left: 2%;
+    margin-bottom: 2%;
+}
+
+.all {
+    justify-content: center;
+}
+
+
+.tool-panel {
+    display: flex;
+    justify-content: center;
+} 
+
+.tool-buttons {
+    display: flex;
+}
+
+.line-width-control {
+    display: flex;
+}
+
+.boards {
+    display: grid;    
+}
+
+#background-canvas {
+    border: 1px solid;
+    grid-area: 1 / 1;
+}
+
+
+#drawing-canvas {
+    border: 1px solid;
+    grid-area: 1 / 1;
+}
+
+
+.bottom-panel {
+    display: flex;
+}
+
+.control-buttons {
+    display: flex;
+    float: right;
+    margin-left: auto; 
+    margin-right: 0%;
+}
+
+
+.color-selector {
+    display: flex;
+    float: left;
+    margin-left: 0%;
+    margin-right: auto;
+}
