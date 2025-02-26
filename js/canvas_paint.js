@@ -357,16 +357,26 @@ function render({ model, el }) {
     function displayColors() {
         colors.forEach(color => {
             const listeners = [{event: 'click', handler: () => currentColor = color}];
-
+    
+            const colorLiWithTooltip = document.createElement('div');
+            colorLiWithTooltip.classList.add('tooltip-trigger');
+            
             const li = document.createElement('li');
             li.classList.add('color-list-item');
+    
+            const tooltip = document.createElement('div');
+            tooltip.classList.add('tooltip');
+            tooltip.innerHTML = "catcatcatcat (1)";  // tooltip text here
+    
+            colorLiWithTooltip.appendChild(li);
+            colorLiWithTooltip.appendChild(tooltip);
             
             listeners.forEach(listener => {
                 li.addEventListener(listener.event, listener.handler);
             });
-
+    
             li.style.backgroundColor = color;
-            colorList.appendChild(li);
+            colorList.appendChild(colorLiWithTooltip);
         });
     }
 
