@@ -111,7 +111,6 @@ function render({ model, el }) {
     ctx2.imageSmoothingEnabled = false;
 
 
-    let lineWidth = lineWidthRange.value;
     let isDrawing = false;
     const colors = ["rgb(155, 39, 19)", 'green', 'blue', 'yellow'];
     let currentColor = colors[0];
@@ -125,11 +124,52 @@ function render({ model, el }) {
 
     let currentTool = tools.brush;
     brushBtn.classList.add('selected');
+    let lineWidth = lineWidthRange.value;
+    let brushStamp = generateBrushStamp(lineWidth, currentColor);
 
     let prevMouseX = null;
     let prevMouseY = null;
     let snapshot = null;
 
+
+    function generateBrushStamp(width, color) {
+        const radius = Math.floor(width / 2);
+    
+        // temporary canvas for creating stamp image
+        const canvasTemp = document.createElement('canvas');
+        canvasTemp.width = width;
+        canvasTemp.height = width;
+    
+        const ctxTemp = canvasTemp.getContext('2d');
+        const stampImageData = ctxTemp.createImageData(width, width);
+        
+        let currentColorRGBA = parseCssColorRGBA(color); 
+        
+        for (let i = -radius+1; i <= radius-1; i++) {
+            for (let j = -radius+1; j <= radius-1; j++) {
+                
+                const px = i + radius;
+                const py = j + radius;
+                const index = (py * width + px) * 4; // Pixel index in ImageData (RGBA)
+                
+                if (i * i + j * j <= radius**2) {
+                    // stamp object color
+                    stampImageData.data[index] = currentColorRGBA[0];     // R
+                    stampImageData.data[index + 1] = currentColorRGBA[1]; // G
+                    stampImageData.data[index + 2] = currentColorRGBA[2]; // B
+                    stampImageData.data[index + 3] = 255; // alpha, always 255 for correct drawing without anti-aliasing
+                } else {
+                    // fully transparent background of stamp image
+                    stampImageData.data[index] = 255;
+                    stampImageData.data[index + 1] = 255;
+                    stampImageData.data[index + 2] = 255;
+                    stampImageData.data[index + 3] = 0;
+                }
+            }
+        }
+    
+        return stampImageData;
+    }
 
     function parseCssColorRGBA(str) {
         const div = document.createElement("div");
@@ -155,35 +195,9 @@ function render({ model, el }) {
         const canvasTemp = document.createElement('canvas');
         canvasTemp.width = width;
         canvasTemp.height = width;
-
         const ctxTemp = canvasTemp.getContext('2d');
-        const stampImageData = ctxTemp.createImageData(width, width);
         
-        let currentColorRGBA = parseCssColorRGBA(currentColor); 
-        
-        for (let i = -radius+1; i <= radius-1; i++) {
-            for (let j = -radius+1; j <= radius-1; j++) {
-                
-                const px = i + radius;
-                const py = j + radius;
-                const index = (py * width + px) * 4; // Pixel index in ImageData (RGBA)
-                
-                if (i * i + j * j <= radius**2) {
-                    // stamp object color
-                    stampImageData.data[index] = currentColorRGBA[0];     // R
-                    stampImageData.data[index + 1] = currentColorRGBA[1]; // G
-                    stampImageData.data[index + 2] = currentColorRGBA[2]; // B
-                    stampImageData.data[index + 3] = 255; // alpha, always 255 for correct drawing without anti-aliasing
-                } else {
-                    // fully transparent background of stamp image
-                    stampImageData.data[index] = 255;
-                    stampImageData.data[index + 1] = 255;
-                    stampImageData.data[index + 2] = 255;
-                    stampImageData.data[index + 3] = 0;
-                }
-            }
-        }
-        ctxTemp.putImageData(stampImageData, 0, 0);
+        ctxTemp.putImageData(brushStamp, 0, 0);
         ctx.drawImage(canvasTemp, Math.round(x - radius), Math.round(y - radius));
     }
 
@@ -323,6 +337,7 @@ function render({ model, el }) {
 
     function changeLineWidth(event) {
         lineWidth = event.target.value;
+        brushStamp = generateBrushStamp(lineWidth, currentColor);  // generate brush stamp with new size
     }
 
 
@@ -356,7 +371,10 @@ function render({ model, el }) {
 
     function displayColors() {
         colors.forEach(color => {
-            const listeners = [{event: 'click', handler: () => currentColor = color}];
+            const listeners = [
+                {event: 'click', handler: () => currentColor = color},
+                {event: 'click', handler: () => brushStamp = generateBrushStamp(lineWidth, currentColor)}  // generate brush stamp with new color
+            ];
     
             const colorLiWithTooltip = document.createElement('div');
             colorLiWithTooltip.classList.add('tooltip-trigger');
