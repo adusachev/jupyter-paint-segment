@@ -1,53 +1,19 @@
 function render({ model, el }) {
 
-    // const markup = `
-    //   <div class="all">
-    //     <div class="tool-panel">
-    //       <div class="tool-buttons">
-    //         <button id="rectangle-btn" class="tool-btn"></button>
-    //         <button id="brush-btn" class="tool-btn"></button>
-    //         <button id="eraser-btn" class="tool-btn"></button>
-    //       </div>
-          
-    //       <div class="line-width-control">
-    //         <p class="line-width-text">Brushsize:</p>
-    //         <input type="range" id="line-width-range" min="1" max="100">
-    //       </div>
-    //     </div>
-        
-    //     <div class="boards">
-    //       <canvas id="background-canvas" class="canvases"></canvas>
-    //       <canvas id="drawing-canvas" class="canvases"></canvas>
-    //     </div>
-
-    //     <div class="bottom-panel">
-    //       <div class="color-selector">
-    //         <p class="color-selector-title">Labels:</p>
-    //         <ul id="color-list" class="color-list"></ul>
-    //       </div>
-
-    //       <div class="control-buttons">
-    //         <button id="clear-btn" class="control-btn">Clear</button>
-    //       </div>
-    //     </div>
-    //   </div>
-    // `;
-
-    // Create the container element
+    ////////////// init markup ////////////////
     const container = document.createElement('div');
     container.classList.add('container');
 
-    // Create the all wrapper
     const all = document.createElement('div');
     all.classList.add('all');
     container.appendChild(all);
 
-    // Create the tool panel
+    // Tool panel
     const toolPanel = document.createElement('div');
     toolPanel.classList.add('tool-panel');
     all.appendChild(toolPanel);
 
-    // Create the tool buttons
+    // Tool-buttons
     const toolButtons = document.createElement('div');
     toolButtons.classList.add('tool-buttons');
     toolPanel.appendChild(toolButtons);
@@ -67,7 +33,7 @@ function render({ model, el }) {
     eraserBtn.classList.add('tool-btn');
     toolButtons.appendChild(eraserBtn);
 
-    // Create the line width control
+    // Line width control
     const lineWidthControl = document.createElement('div');
     lineWidthControl.classList.add('line-width-control');
     toolPanel.appendChild(lineWidthControl);
@@ -84,7 +50,7 @@ function render({ model, el }) {
     lineWidthRange.max = 100;
     lineWidthControl.appendChild(lineWidthRange);
 
-    // Create the boards
+    // Canvases
     const boards = document.createElement('div');
     boards.classList.add('boards');
     all.appendChild(boards);
@@ -99,12 +65,12 @@ function render({ model, el }) {
     drawingCanvas.classList.add('canvases');
     boards.appendChild(drawingCanvas);
 
-    // Create the bottom panel
+    // Bottom panel
     const bottomPanel = document.createElement('div');
     bottomPanel.classList.add('bottom-panel');
     all.appendChild(bottomPanel);
 
-    // Create the color selector
+    // Color selector
     const colorSelector = document.createElement('div');
     colorSelector.classList.add('color-selector');
     bottomPanel.appendChild(colorSelector);
@@ -119,7 +85,7 @@ function render({ model, el }) {
     colorList.classList.add('color-list');
     colorSelector.appendChild(colorList);
 
-    // Create the control buttons
+    // Control buttons
     const controlButtons = document.createElement('div');
     controlButtons.classList.add('control-buttons');
     bottomPanel.appendChild(controlButtons);
@@ -130,7 +96,7 @@ function render({ model, el }) {
     clearBtn.textContent = 'Clear';
     controlButtons.appendChild(clearBtn);
 
-    //////////////////////////////////////////////////////////////////////////////////////////
+    ////////////// end init markup ////////////////
 
     const scalefactor = 1;
     const BOARD_WIDTH = drawingCanvas.width = 500 * scalefactor;

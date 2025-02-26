@@ -13,3 +13,6 @@ dev_notebooks/
 .vscode/
 .mypy_cache/
 .ipynb_checkpoints/
+node_modules/
+package.json
+package-lock.json
