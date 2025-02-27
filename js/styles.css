@@ -140,7 +140,6 @@
 
 
 #drawing-canvas {
-    z-index: 1;
     background-color: rgba(0, 0, 0, 0);
     opacity: 0.4;
 }
@@ -224,12 +223,9 @@
 
 .tooltip-trigger {
     position: relative;
-    z-index: 0;
 }
 
 .tooltip {
-    z-index: 0;
-
     /*Styling the tooltip background*/
     background-color: #4e5660;
     padding: 10px; 
@@ -249,8 +245,9 @@
     bottom: 140%;
     transform: translateX(-50%);
 
-    /*Setting the tooltip to be hidden by default*/
-    opacity: 0;
+    /*Disable tooltip displaying by default*/
+    /* opacity: 0; */
+    display: none;
 }
 
 .tooltip::after {
@@ -265,13 +262,8 @@
 }
 
 .color-list-item:hover + .tooltip {
-    opacity: 1;
-    z-index: 2;
+    display: block;
+    opacity: 0.85;
     transition: 0.5s;
     transition-delay: 0.05s;
-}
-
-.color-list-item:hover + .tooltip-trigger {
-    opacity: 1;
-    z-index: 2;
 }
