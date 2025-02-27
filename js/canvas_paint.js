@@ -438,6 +438,18 @@ function render({ model, el }) {
         brushCursor.style.left = `${ e.clientX - brushCursor.offsetWidth/2 }px`;
     });
 
+    // selected status for color list items
+    const colorListElements = colorList.querySelectorAll('li');
+    colorListElements.forEach((li) => {
+        li.addEventListener('mousedown', e => {
+            colorListElements.forEach((li2) => {
+                li2.classList.remove('selected');
+            });
+            li.classList.add('selected');
+        });
+    });
+    colorListElements[0].classList.add('selected');
+    
 
     el.appendChild(container);
 }
