@@ -65,6 +65,10 @@ function render({ model, el }) {
     drawingCanvas.classList.add('canvases');
     boards.appendChild(drawingCanvas);
 
+    const brushCursor = document.createElement('div');
+    brushCursor.id = 'brush-cursor';
+    boards.appendChild(brushCursor);
+
     // Bottom panel
     const bottomPanel = document.createElement('div');
     bottomPanel.classList.add('bottom-panel');
@@ -126,6 +130,10 @@ function render({ model, el }) {
     brushBtn.classList.add('selected');
     let lineWidth = lineWidthRange.value;
     let brushStamp = generateBrushStamp(lineWidth, currentColor);
+
+    brushCursor.classList.add('circle-brush-cursor');
+    brushCursor.style.width = `${lineWidth}px`;
+    brushCursor.style.height = `${lineWidth}px`
 
     let prevMouseX = null;
     let prevMouseY = null;
@@ -205,8 +213,10 @@ function render({ model, el }) {
 
     function drawEraserStamp(x, y, width) {
 
-        const eraserSize = Math.floor(width / 2);
-        const eraserHalfSize = Math.floor(width / 4);
+        // const eraserSize = Math.floor(width / 2);
+        // const eraserHalfSize = Math.floor(width / 4);
+        const eraserSize = width;
+        const eraserHalfSize = Math.floor(width / 2);
 
         const canvasTemp = document.createElement('canvas');
         canvasTemp.width = eraserSize;
@@ -226,8 +236,6 @@ function render({ model, el }) {
         let sx = (x1 < x2) ? 1 : -1;
         let sy = (y1 < y2) ? 1 : -1;
         let err = dx - dy;
-
-        if (width == 1) width++;
 
         while (true) {
             
@@ -337,7 +345,12 @@ function render({ model, el }) {
 
     function changeLineWidth(event) {
         lineWidth = event.target.value;
+        if (lineWidth == 1) lineWidth++;
+
         brushStamp = generateBrushStamp(lineWidth, currentColor);  // generate brush stamp with new size
+
+        brushCursor.style.width = `${lineWidth}px`;
+        brushCursor.style.height = `${lineWidth}px`;
     }
 
 
@@ -348,6 +361,8 @@ function render({ model, el }) {
         rectangleBtn.classList.add('selected');
         brushBtn.classList.remove('selected');
         eraserBtn.classList.remove('selected');
+
+        brushCursor.style.display = "none";
     }
 
     function enableBrushTool() {
@@ -357,6 +372,10 @@ function render({ model, el }) {
         brushBtn.classList.add('selected');
         rectangleBtn.classList.remove('selected');
         eraserBtn.classList.remove('selected');
+
+        brushCursor.classList.remove(...brushCursor.classList);  // remove all classes of brushCursor element
+        brushCursor.classList.add("circle-brush-cursor");
+        brushCursor.style.display = "block";
     }
 
     function enableEraserTool() {
@@ -366,6 +385,10 @@ function render({ model, el }) {
         eraserBtn.classList.add('selected');
         brushBtn.classList.remove('selected');
         rectangleBtn.classList.remove('selected');
+
+        brushCursor.classList.remove(...brushCursor.classList);  // remove all classes of brushCursor element
+        brushCursor.classList.add("square-brush-cursor");
+        brushCursor.style.display = "block";
     }
 
 
@@ -409,6 +432,11 @@ function render({ model, el }) {
     brushBtn.addEventListener('mousedown', enableBrushTool);
     rectangleBtn.addEventListener('mousedown', enableRectangleTool);
     eraserBtn.addEventListener('mousedown', enableEraserTool);
+
+    drawingCanvas.addEventListener('mousemove', e => {
+        brushCursor.style.top = `${ e.clientY - brushCursor.offsetHeight/2 }px`;
+        brushCursor.style.left = `${ e.clientX - brushCursor.offsetWidth/2 }px`;
+    });
 
 
     el.appendChild(container);

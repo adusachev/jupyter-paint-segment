@@ -267,3 +267,39 @@
     transition: 0.5s;
     transition-delay: 0.05s;
 }
+
+
+/* Drawing tools cursor settings */
+.circle-brush-cursor {
+    position: fixed;
+    z-index: 1000;
+    width: 0;
+    height: 0;
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 50%;
+    pointer-events: none;
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.square-brush-cursor {
+    position: fixed;
+    z-index: 1000;
+    width: 0;
+    height: 0;
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 0%;
+    pointer-events: none;
+    border-color: rgba(0, 0, 0, 0);
+}
+
+#drawing-canvas:hover ~ .circle-brush-cursor {
+    background-color: rgba(0, 0, 0, 0);
+    border: 1px solid;
+    border-color: #474748;
+}
+
+#drawing-canvas:hover ~ .square-brush-cursor {
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 1px solid;
+    border-color: #868689;
+}
