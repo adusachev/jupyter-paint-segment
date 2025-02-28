@@ -124,6 +124,7 @@
 
 .boards {
     display: grid;
+    position: relative;
 }
 
 .canvases {
@@ -282,7 +283,7 @@
 
 /* Drawing tools cursor settings */
 .circle-brush-cursor {
-    position: fixed;
+    position: absolute;
     z-index: 1000;
     width: 0;
     height: 0;
@@ -293,7 +294,7 @@
 }
 
 .square-brush-cursor {
-    position: fixed;
+    position: absolute;
     z-index: 1000;
     width: 0;
     height: 0;

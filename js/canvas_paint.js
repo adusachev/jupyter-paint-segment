@@ -434,8 +434,8 @@ function render({ model, el }) {
     eraserBtn.addEventListener('mousedown', enableEraserTool);
 
     drawingCanvas.addEventListener('mousemove', e => {
-        brushCursor.style.top = `${ e.clientY - brushCursor.offsetHeight/2 }px`;
-        brushCursor.style.left = `${ e.clientX - brushCursor.offsetWidth/2 }px`;
+        brushCursor.style.top = `${ e.offsetY - lineWidth/2 }px`;
+        brushCursor.style.left = `${ e.offsetX - lineWidth/2}px`;
     });
 
     // selected status for color list items
