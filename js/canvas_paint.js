@@ -47,7 +47,7 @@ function render({ model, el }) {
     lineWidthRange.type = 'range';
     lineWidthRange.id = 'line-width-range';
     lineWidthRange.min = 1;
-    lineWidthRange.max = 100;
+    lineWidthRange.max = 200;
     lineWidthControl.appendChild(lineWidthRange);
 
     // Canvases
@@ -103,8 +103,8 @@ function render({ model, el }) {
     ////////////// end init markup ////////////////
 
     const scalefactor = 1;
-    const BOARD_WIDTH = drawingCanvas.width = 500 * scalefactor;
-    const BOARD_HEIGHT = drawingCanvas.height = 350 * scalefactor;
+    const BOARD_WIDTH = drawingCanvas.width = 735 * scalefactor;
+    const BOARD_HEIGHT = drawingCanvas.height = 386 * scalefactor;
     backgroundCanvas.width = BOARD_WIDTH;
     backgroundCanvas.height = BOARD_HEIGHT;
 
@@ -421,13 +421,21 @@ function render({ model, el }) {
         });
     }
 
+    // style progress of slider
+    function colorRangeProgress() {
+        let lineWidthPercent = 100 * (lineWidthRange.value - lineWidthRange.min) / (lineWidthRange.max - lineWidthRange.min);
+        lineWidthRange.style.background = `linear-gradient(to right, #3879ea 0%, #3879ea ${lineWidthPercent}%, #b6b5b5 ${lineWidthPercent}%, #b6b5b5 100%)`;
+    };
+
     displayColors();
+    colorRangeProgress();
 
     drawingCanvas.addEventListener('mousemove', draw);
     drawingCanvas.addEventListener('mousedown', startDrawing);
     drawingCanvas.addEventListener('mouseup', stopDrawing);
     clearBtn.addEventListener('click', clearBoard);
     lineWidthRange.addEventListener('change', changeLineWidth);
+    lineWidthRange.addEventListener("input", colorRangeProgress);
 
     brushBtn.addEventListener('mousedown', enableBrushTool);
     rectangleBtn.addEventListener('mousedown', enableRectangleTool);
