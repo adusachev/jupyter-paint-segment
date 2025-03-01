@@ -21,20 +21,27 @@ class SegmentWidget(anywidget.AnyWidget):
 
     _image_data = traitlets.Unicode().tag(sync=True)
 
+    _image_height = traitlets.Int().tag(sync=True)
+    _image_width = traitlets.Int().tag(sync=True)
+
     _scale_factor = traitlets.Float(1).tag(sync=True)
 
-    def set_image(self, image: np.ndarray) -> None:
-        self._image_data = image_to_base64str(image)
+    def __init__(self, image, n_labels, colors=None, titles=None, image_scale=1):
+        self.image = image
+        self._image_height = image.shape[0]
+        self._image_width = image.shape[1]
 
-    def apply_widget_settings(self, scale_image: float = 1) -> None:
-        self._scale_factor = scale_image
+        self._image_data = self._image_to_base64str(image)
+        # self.n_labels = n_labels
 
+        super().__init__()
 
-def image_to_base64str(image: np.ndarray) -> str:
+    @staticmethod
+    def _image_to_base64str(image: np.ndarray) -> str:
 
-    retval, buffer_img = cv.imencode(".png", image)
-    image_base64 = base64.b64encode(buffer_img)
+        retval, buffer_img = cv.imencode(".png", image)
+        image_base64 = base64.b64encode(buffer_img)
 
-    image_base64_str = "data:image/png;base64," + image_base64.decode()
+        image_base64_str = "data:image/png;base64," + image_base64.decode()
 
-    return image_base64_str
+        return image_base64_str

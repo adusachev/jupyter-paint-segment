@@ -101,10 +101,18 @@ function render({ model, el }) {
     controlButtons.appendChild(clearBtn);
 
     ////////////// end init markup ////////////////
+    
+    // load image and setup canvas
+    const backgroundImageWidth = model.get('_image_width');
+    const backgroundImageHeight = model.get('_image_height');
+    const backgroundImageBase64 = model.get('_image_data');
+    backgroundCanvas.style.backgroundImage =  "url(" + backgroundImageBase64 + ")";
 
     const scalefactor = 1;
-    const BOARD_WIDTH = drawingCanvas.width = 735 * scalefactor;
-    const BOARD_HEIGHT = drawingCanvas.height = 386 * scalefactor;
+    const BOARD_WIDTH = drawingCanvas.width = backgroundImageWidth * scalefactor;
+    const BOARD_HEIGHT = drawingCanvas.height = backgroundImageHeight * scalefactor;
+    // const BOARD_WIDTH = drawingCanvas.width = 735 * scalefactor;
+    // const BOARD_HEIGHT = drawingCanvas.height = 386 * scalefactor;
     backgroundCanvas.width = BOARD_WIDTH;
     backgroundCanvas.height = BOARD_HEIGHT;
 
