@@ -108,6 +108,11 @@ function render({ model, el }) {
     const backgroundImageBase64 = model.get('_image_data');
     backgroundCanvas.style.backgroundImage =  "url(" + backgroundImageBase64 + ")";
 
+    // sync empty drawing canvas image with python
+    let drawingSnapshotBase64 = drawingCanvas.toDataURL("image/png");
+    model.set("_drawing_base64", drawingSnapshotBase64);
+    model.save_changes()
+
     const scalefactor = 1;
     const BOARD_WIDTH = drawingCanvas.width = backgroundImageWidth * scalefactor;
     const BOARD_HEIGHT = drawingCanvas.height = backgroundImageHeight * scalefactor;
@@ -344,6 +349,11 @@ function render({ model, el }) {
     function stopDrawing(event) {
         isDrawing = false;
         ctx.closePath();
+
+        // sync drawing with python
+        let drawingSnapshotBase64 = drawingCanvas.toDataURL("image/png");
+        model.set("_drawing_base64", drawingSnapshotBase64);
+        model.save_changes()
     }
 
     function clearBoard() {
