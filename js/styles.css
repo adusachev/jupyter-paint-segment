@@ -317,11 +317,13 @@
 #drawing-canvas:hover ~ .circle-brush-cursor {
     background-color: rgba(0, 0, 0, 0);
     border: 1px solid;
-    border-color: #474748;
+    /* border-color: #474748; */
+    border-color: black;
 }
 
 #drawing-canvas:hover ~ .square-brush-cursor {
     background-color: rgba(255, 255, 255, 0.5);
     border: 1px solid;
-    border-color: #868689;
+    /* border-color: #868689; */
+    border-color: black;
 }
