@@ -112,7 +112,7 @@ function render({ model, el }) {
     let drawingSnapshotBase64 = drawingCanvas.toDataURL("image/png");
     model.set("_drawing_base64", drawingSnapshotBase64);
     model.save_changes()
-    
+
     const scalefactor =  model.get('_scale_factor');
 
     const BOARD_WIDTH = Math.floor(backgroundImageWidth * scalefactor);
@@ -131,7 +131,8 @@ function render({ model, el }) {
 
 
     let isDrawing = false;
-    const colors = ["rgb(155, 39, 19)", 'green', 'blue', 'yellow'];
+    // const colors = ["rgb(155, 39, 19)", 'green', 'blue', 'yellow'];
+    const colors = model.get('_colors');
     let currentColor = colors[0];
 
     const tools = {

@@ -1,6 +1,7 @@
 import base64
 import io
 from pathlib import Path
+from typing import List, Optional
 
 import anywidget
 import cv2 as cv
@@ -16,13 +17,26 @@ CSS = REPO_DIR / "js" / "styles.css"
 # JS_CODE = CURRENT_DIR / "static" / "canvas.js"
 # CSS = CURRENT_DIR / "static" / "styles.css"
 
+DEFAULT_COLORS = [
+    "#2ca02c",  # cooked asparagus green
+    "#d62728",  # brick red
+    "#fefe00",  # yellow
+    "#1f77b4",  # muted blue
+    "#ff7f0e",  # safety orange
+    "#9467bd",  # muted purple
+    "#8c564b",  # chestnut brown
+    "#17becf",  # blue-teal
+    "#e377c2",  # raspberry yogurt pink
+    "#7f7f7f",  # middle gray
+    "#bcbd22",  # curry yellow-green
+]
+
 
 class SegmentWidget(anywidget.AnyWidget):
     _esm = JS_CODE
     _css = CSS
 
     _image_data = traitlets.Unicode().tag(sync=True)
-
     _image_height = traitlets.Int().tag(sync=True)
     _image_width = traitlets.Int().tag(sync=True)
 
@@ -30,15 +44,31 @@ class SegmentWidget(anywidget.AnyWidget):
 
     _drawing_base64 = traitlets.Unicode().tag(sync=True)
 
-    def __init__(self, image, n_labels, colors=None, titles=None, image_scale=1):
+    _label_titles = traitlets.List(traitlets.Unicode).tag(sync=True)
+    _colors = traitlets.List(traitlets.Unicode).tag(sync=True)
+
+    def __init__(
+        self,
+        image: np.ndarray,
+        labels: List[str],
+        colors: Optional[List[str]] = None,
+        image_scale: float = 1,
+    ):
         self.image = image
         self._image_height = image.shape[0]
         self._image_width = image.shape[1]
-
         self._image_data = self._image_to_base64str(image)
-        # self.n_labels = n_labels
 
         self._scale_factor = image_scale
+
+        self.n_labels = len(labels)
+        self._label_titles = labels
+        if colors:
+            assert len(colors) == self.n_labels, "Number of colors should be same as number on labels"  # fmt: skip
+            self._colors = colors
+        else:
+            # TODO: case when n_labels > len(DEFAULT_COLORS)
+            self._colors = DEFAULT_COLORS[: self.n_labels]
 
         super().__init__()
 
