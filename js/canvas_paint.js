@@ -112,14 +112,16 @@ function render({ model, el }) {
     let drawingSnapshotBase64 = drawingCanvas.toDataURL("image/png");
     model.set("_drawing_base64", drawingSnapshotBase64);
     model.save_changes()
+    
+    const scalefactor =  model.get('_scale_factor');
 
-    const scalefactor = 1;
-    const BOARD_WIDTH = drawingCanvas.width = backgroundImageWidth * scalefactor;
-    const BOARD_HEIGHT = drawingCanvas.height = backgroundImageHeight * scalefactor;
-    // const BOARD_WIDTH = drawingCanvas.width = 735 * scalefactor;
-    // const BOARD_HEIGHT = drawingCanvas.height = 386 * scalefactor;
+    const BOARD_WIDTH = Math.floor(backgroundImageWidth * scalefactor);
+    const BOARD_HEIGHT = Math.floor(backgroundImageHeight * scalefactor);
+    drawingCanvas.width = BOARD_WIDTH;
+    drawingCanvas.height = BOARD_HEIGHT;
     backgroundCanvas.width = BOARD_WIDTH;
     backgroundCanvas.height = BOARD_HEIGHT;
+    backgroundCanvas.style.backgroundSize = `${BOARD_WIDTH}px ${BOARD_HEIGHT}px`;
 
     const ctx = drawingCanvas.getContext('2d')
     const ctx2 = backgroundCanvas.getContext('2d')

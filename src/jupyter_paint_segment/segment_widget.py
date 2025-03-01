@@ -38,10 +38,20 @@ class SegmentWidget(anywidget.AnyWidget):
         self._image_data = self._image_to_base64str(image)
         # self.n_labels = n_labels
 
+        self._scale_factor = image_scale
+
         super().__init__()
 
     def segmentation_result(self) -> np.ndarray:
         drawing_array = self._base64str_to_image(self._drawing_base64)
+        if self._scale_factor != 1:
+            drawing_resized = cv.resize(
+                src=drawing_array,
+                dsize=(self._image_width, self._image_height),
+                interpolation=cv.INTER_NEAREST,
+            )
+            return drawing_resized
+
         return drawing_array
 
     @staticmethod

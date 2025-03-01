@@ -145,7 +145,13 @@
 }
 
 #background-canvas {
-    background-image: url("../examples/images/kitten.png");
+    /* assigned from js */
+    /* background-image: url("../examples/images/kitten.png"); */
+    
+    /* assigned from js */
+    /* background-size: 735px 386px; */
+    
+    background-repeat: no-repeat;
     opacity: 1;
 }
 
