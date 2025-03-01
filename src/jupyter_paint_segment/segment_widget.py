@@ -15,7 +15,7 @@ CSS = REPO_DIR / "js" / "styles.css"
 # CSS = CURRENT_DIR / "static" / "styles.css"
 
 
-class PaintLabelWidget(anywidget.AnyWidget):
+class SegmentWidget(anywidget.AnyWidget):
     _esm = JS_CODE
     _css = CSS
 
