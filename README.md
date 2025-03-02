@@ -1,9 +1,12 @@
-# jupyter-paint-label
+# jupyter-paint-segment
 
 
 ## Overview
 
 A jupyter widget for interactive drawing segmentation masks.
+
+Brush, rectangle and eraser tools are available.
+Size of brush and eraser can be changed using slider.
 
 
 ![](./docs/images/sheep_dog_interactive.gif)
