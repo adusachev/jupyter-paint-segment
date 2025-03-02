@@ -142,6 +142,7 @@
     grid-area: 1 / 1;
     cursor: crosshair;
     image-rendering: pixelated;
+    border-color: black;
 }
 
 #background-canvas {
