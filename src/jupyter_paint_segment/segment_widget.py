@@ -5,6 +5,7 @@ from typing import List, Optional
 
 import anywidget
 import cv2 as cv
+import matplotlib.colors
 import numpy as np
 import traitlets
 from PIL import Image
@@ -64,11 +65,12 @@ class SegmentWidget(anywidget.AnyWidget):
         self.n_labels = len(labels)
         self._label_titles = labels
         if colors:
-            assert len(colors) == self.n_labels, "Number of colors should be same as number on labels"  # fmt: skip
-            self._colors = colors
+            self._colors = [matplotlib.colors.to_hex(c, keep_alpha=False) for c in colors]  # fmt: skip
         else:
             # TODO: case when n_labels > len(DEFAULT_COLORS)
             self._colors = DEFAULT_COLORS[: self.n_labels]
+
+        self._validate_input_params()
 
         super().__init__()
 
@@ -83,6 +85,13 @@ class SegmentWidget(anywidget.AnyWidget):
             return drawing_resized
 
         return drawing_array
+
+    def _validate_input_params(self) -> None:
+        if len(self._label_titles) != len(set(self._label_titles)):
+            raise ValueError("Label titles should be unique")
+
+        if len(self._colors) != self.n_labels:
+            raise ValueError("Number of colors should be same as number on labels")
 
     @staticmethod
     def _image_to_base64str(image: np.ndarray) -> str:
