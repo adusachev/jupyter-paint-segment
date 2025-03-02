@@ -133,6 +133,12 @@ function render({ model, el }) {
     let isDrawing = false;
     // const colors = ["rgb(155, 39, 19)", 'green', 'blue', 'yellow'];
     const colors = model.get('_colors');
+    const label_titles = model.get('_label_titles');
+    let labelColorMap = new Map();
+    for (let i = 0; i < label_titles.length; i++) {
+        labelColorMap.set(label_titles[i], colors[i]);
+    }
+
     let currentColor = colors[0];
 
     const tools = {
@@ -414,7 +420,10 @@ function render({ model, el }) {
 
 
     function displayColors() {
-        colors.forEach(color => {
+        let labelNum = 1;
+        
+        labelColorMap.forEach((color, label, map) => {
+
             const listeners = [
                 {event: 'click', handler: () => currentColor = color},
                 {event: 'click', handler: () => brushStamp = generateBrushStamp(lineWidth, currentColor)}  // generate brush stamp with new color
@@ -428,7 +437,8 @@ function render({ model, el }) {
     
             const tooltip = document.createElement('div');
             tooltip.classList.add('tooltip');
-            tooltip.innerHTML = "catcatcatcat (1)";  // tooltip text here
+            tooltip.innerHTML = `${label} (${labelNum})`;  // tooltip text here
+            labelNum++;
     
             colorLiWithTooltip.appendChild(li);
             colorLiWithTooltip.appendChild(tooltip);
