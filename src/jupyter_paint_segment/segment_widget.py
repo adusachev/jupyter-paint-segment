@@ -11,11 +11,11 @@ import traitlets
 from PIL import Image
 
 REPO_DIR = Path(__file__).parent.parent.parent
-JS_CODE = REPO_DIR / "js" / "canvas_paint.js"
+JS_CODE = REPO_DIR / "js" / "paint_widget.js"
 CSS = REPO_DIR / "js" / "styles.css"
 
 # CURRENT_DIR = Path(__file__).parent
-# JS_CODE = CURRENT_DIR / "static" / "canvas.js"
+# JS_CODE = CURRENT_DIR / "static" / "paint_widget.js"
 # CSS = CURRENT_DIR / "static" / "styles.css"
 
 DEFAULT_COLORS = [
