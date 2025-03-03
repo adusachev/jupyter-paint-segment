@@ -1,7 +1,7 @@
 import base64
 import io
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import anywidget
 import cv2 as cv
@@ -74,17 +74,36 @@ class SegmentWidget(anywidget.AnyWidget):
 
         super().__init__()
 
-    def segmentation_result(self) -> np.ndarray:
-        drawing_array = self._base64str_to_image(self._drawing_base64)
+    def segmentation_result(self) -> Tuple[np.ndarray, Dict[str, int]]:
+        drawing_rgb_array = self._base64str_to_image(self._drawing_base64)
         if self._scale_factor != 1:
-            drawing_resized = cv.resize(
-                src=drawing_array,
+            drawing_rgb_array = cv.resize(
+                src=drawing_rgb_array,
                 dsize=(self._image_width, self._image_height),
                 interpolation=cv.INTER_NEAREST,
             )
-            return drawing_resized
 
-        return drawing_array
+        self._validate_drawing(drawing_rgb_array)
+
+        # convert drawing image to 2d labels array
+        drawing_hex_array = self._rgb_to_hex_image(drawing_rgb_array)
+
+        colors = self._colors.copy()
+        label_titles = self._label_titles.copy()
+        label_numbers = list(range(1, len(self._colors) + 1))
+
+        ## add background label
+        colors.append("#000000")
+        label_numbers.append(0)
+        label_titles.append("unlabeled_background")
+
+        map_color_label_num = dict(zip(colors, label_numbers))
+        map_label_title_label_num = dict(zip(label_titles, label_numbers))
+
+        hex_color_to_label = np.vectorize(map_color_label_num.get)
+        labels_array = hex_color_to_label(drawing_hex_array)
+
+        return labels_array, map_label_title_label_num
 
     def _validate_input_params(self) -> None:
         if len(self._label_titles) != len(set(self._label_titles)):
@@ -92,6 +111,32 @@ class SegmentWidget(anywidget.AnyWidget):
 
         if len(self._colors) != self.n_labels:
             raise ValueError("Number of colors should be same as number on labels")
+
+        if len(self._colors) != len(set(self._colors)):
+            raise ValueError("Colors should be unique")
+
+        if "#000000" in self._colors:
+            raise ValueError(
+                "Black color is forbidden, it is reserved by a background class"
+            )
+
+    def _validate_drawing(self, drawing_rgb_array: np.ndarray) -> None:
+        if len(drawing_rgb_array.shape) != 3 or drawing_rgb_array.shape[2] != 3:
+            raise Exception(
+                f"Exported drawing has shape {drawing_rgb_array.shape}, but expected (N, M, 3)"
+            )
+
+        # check that drawing colors are valid
+        drawing_hex_array = self._rgb_to_hex_image(drawing_rgb_array)
+        drawing_colors_set = set(np.unique(drawing_hex_array))
+
+        allowed_colors_set = set(self._colors.copy())
+        allowed_colors_set.add("#000000")
+
+        if not drawing_colors_set.issubset(allowed_colors_set):
+            raise Exception(
+                f"Exported drawing contains unexpected colors, {drawing_colors_set=}, {allowed_colors_set=}"
+            )
 
     @staticmethod
     def _image_to_base64str(image: np.ndarray) -> str:
@@ -115,8 +160,27 @@ class SegmentWidget(anywidget.AnyWidget):
 
         if len(image.shape) != 3 or image.shape[2] != 4:
             raise Exception(
-                f"Mask image conversion to numpy array failed, image_shape={image.shape}, but expected (n, m, 4)"
+                f"Exported drawing conversion to numpy array failed, image_shape={image.shape}, but expected (n, m, 4)"
             )
 
         image = image[:, :, :3]  # completely remove alpha channel
         return image
+
+    @staticmethod
+    def _rgb_to_hex_image(image: np.ndarray) -> np.ndarray:
+        """
+        Convert rgb numpy array to hex numpy array
+
+        :param image: image data, shape = (N, M, 3), dtype=uint8
+        :return: array with hex colors, shape = (N, M), dtype=str
+        """
+        r_channel = image[:, :, 0]
+        g_channel = image[:, :, 1]
+        b_channel = image[:, :, 2]
+
+        array_to_hex = np.vectorize("{:02x}".format)
+        image_array_hex = np.char.add("#", array_to_hex(r_channel))
+        image_array_hex = np.char.add(image_array_hex, array_to_hex(g_channel))
+        image_array_hex = np.char.add(image_array_hex, array_to_hex(b_channel))
+
+        return image_array_hex
