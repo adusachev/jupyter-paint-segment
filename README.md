@@ -26,34 +26,58 @@ pip install jupyter_paint_segment
 
 ## Usage
 
-Load image into numpy array:
+1. Load image into numpy array:
 ```python
-import cv2 as cv
+# with PIL: 
+from PIL import Image
+import numpy as np
+pilImage = Image.open("./examples/images/sheeps.png")
+image = np.array(pilImage)
 
-image = cv.imread("./examples/images/sheeps.png")
+# or with opencv:
+import cv2 as cv
+image_bgr = cv.imread("./examples/images/sheeps.png")
+image = cv.cvtColor(image_bgr, cv.COLOR_BGR2RGB)
 ```
 
-Define labels and colors (optionally) and create widget:
+2. Define labels and colors (optionally) and create widget:
 ```python
 from jupyter_paint_segment import SegmentWidget
 
 widget = SegmentWidget(
-	image=image,
-	labels=["sheep", "dog"],
-	colors=["red", "blue"],
-	image_scale=1.3,
+    image=image,
+    labels=["sheep", "dog"],
+    colors=["red", "blue"],
+    image_scale=1,
 )
 ```
 
 << gif here >>
 
 
-Get results:
+3. Get segmentation results:
 ```python
-result_mask = widget.segmentation_result()
-result_mask
+labels_array, labels_map = widget.segmentation_result()
+
+labels_map
+# {'sheep': 1, 'dog': 2, 'unlabeled_background': 0}
+labels_array
+# array([[0, 0, 0, ..., 0, 0, 0],
+#        [0, 0, 0, ..., 0, 0, 0],
+#        [0, 0, 0, ..., 0, 0, 0],
+#        ...,
+#        [0, 0, 0, ..., 0, 0, 0],
+#        [0, 0, 0, ..., 0, 0, 0],
+#        [0, 0, 0, ..., 0, 0, 0]])
 ```
 
+```python
+import matplotlib.pyplot as plt
+
+plt.imshow(labels_array)
+```
+
+![](./docs/images/result_seg_mask.png)
 
 
 ---
