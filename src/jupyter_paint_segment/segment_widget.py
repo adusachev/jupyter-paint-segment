@@ -55,10 +55,10 @@ class SegmentWidget(anywidget.AnyWidget):
         colors: Optional[List[str]] = None,
         image_scale: float = 1,
     ):
-        self.image = image
-        self._image_height = image.shape[0]
-        self._image_width = image.shape[1]
-        self._image_data = self._image_to_base64str(image)
+        self.image = cv.cvtColor(image, cv.COLOR_RGBA2RGB)
+        self._image_height = self.image.shape[0]
+        self._image_width = self.image.shape[1]
+        self._image_data = self._image_to_base64str(self.image)
 
         self._scale_factor = image_scale
 
@@ -75,18 +75,19 @@ class SegmentWidget(anywidget.AnyWidget):
         super().__init__()
 
     def segmentation_result(self) -> Tuple[np.ndarray, Dict[str, int]]:
-        drawing_rgb_array = self._base64str_to_image(self._drawing_base64)
+        drawing_rgb = self._base64str_to_image(self._drawing_base64)
+
         if self._scale_factor != 1:
-            drawing_rgb_array = cv.resize(
-                src=drawing_rgb_array,
+            drawing_rgb = cv.resize(
+                src=drawing_rgb,
                 dsize=(self._image_width, self._image_height),
                 interpolation=cv.INTER_NEAREST,
             )
 
-        self._validate_drawing(drawing_rgb_array)
+        self._validate_drawing(drawing_rgb)
 
-        # convert drawing image to 2d labels array
-        drawing_hex_array = self._rgb_to_hex_image(drawing_rgb_array)
+        # convert drawing to 2d labels array
+        drawing_hex_array = self._rgb_to_hex_image(drawing_rgb)
 
         colors = self._colors.copy()
         label_titles = self._label_titles.copy()
@@ -139,13 +140,12 @@ class SegmentWidget(anywidget.AnyWidget):
             )
 
     @staticmethod
-    def _image_to_base64str(image: np.ndarray) -> str:
-
-        retval, buffer_img = cv.imencode(".png", image)
+    def _image_to_base64str(image_rgb: np.ndarray) -> str:
+        image_bgr = cv.cvtColor(image_rgb, cv.COLOR_RGB2BGR)
+        retval, buffer_img = cv.imencode(".png", image_bgr)
         image_base64 = base64.b64encode(buffer_img)
 
         image_base64_str = "data:image/png;base64," + image_base64.decode()
-
         return image_base64_str
 
     @staticmethod
@@ -163,8 +163,8 @@ class SegmentWidget(anywidget.AnyWidget):
                 f"Exported drawing conversion to numpy array failed, image_shape={image.shape}, but expected (n, m, 4)"
             )
 
-        image = image[:, :, :3]  # completely remove alpha channel
-        return image
+        image_rgb = cv.cvtColor(image, cv.COLOR_RGBA2RGB)
+        return image_rgb
 
     @staticmethod
     def _rgb_to_hex_image(image: np.ndarray) -> np.ndarray:
