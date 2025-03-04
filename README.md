@@ -9,7 +9,7 @@ Brush, rectangle and eraser tools are available.
 Size of brush and eraser can be changed using slider.
 
 
-![](./docs/images/sheep_dog_interactive.gif)
+![](./docs/images/sheep_dog_interactive_v2.gif)
 
 
 ---
@@ -25,6 +25,9 @@ pip install jupyter_paint_segment
 ---
 
 ## Usage
+
+Demo notebook: `./examples/main.ipynb`
+
 
 1. Load image into numpy array:
 ```python
@@ -50,9 +53,8 @@ widget = SegmentWidget(
     colors=["red", "blue"],
     image_scale=1,
 )
+widget
 ```
-
-<< gif here >>
 
 
 3. Get segmentation results:
