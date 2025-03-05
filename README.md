@@ -85,3 +85,16 @@ plt.imshow(labels_array)
 ---
 
 
+## Related projects
+
+This project was highly inspired by [jupyter-bbox-widget](https://github.com/gereleth/jupyter-bbox-widget).
+
+
+---
+
+## License
+
+This project is licensed under the [MIT license](https://github.com/adusachev/jupyter-paint-segment/blob/master/LICENSE).
+
+---
+

@@ -111,7 +111,7 @@ class SegmentWidget(anywidget.AnyWidget):
             raise ValueError("Label titles should be unique")
 
         if len(self._colors) != self.n_labels:
-            raise ValueError("Number of colors should be same as number on labels")
+            raise ValueError("Number of colors should be same as number of labels")
 
         if len(self._colors) != len(set(self._colors)):
             raise ValueError("Colors should be unique")
