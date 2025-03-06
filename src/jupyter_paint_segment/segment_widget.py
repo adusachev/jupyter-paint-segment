@@ -1,5 +1,3 @@
-import base64
-import io
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -9,6 +7,13 @@ import matplotlib.colors
 import numpy as np
 import traitlets
 from PIL import Image
+
+from jupyter_paint_segment.types import ArrayNxM, ArrayNxMx3
+from jupyter_paint_segment.utils import (
+    base64str_to_image,
+    image_to_base64str,
+    rgb_to_hex_image,
+)
 
 REPO_DIR = Path(__file__).parent.parent.parent
 JS_CODE = REPO_DIR / "js" / "paint_widget.js"
@@ -50,7 +55,7 @@ class SegmentWidget(anywidget.AnyWidget):
 
     def __init__(
         self,
-        image: np.ndarray,
+        image: ArrayNxMx3[np.uint8],
         labels: List[str],
         colors: Optional[List[str]] = None,
         image_scale: float = 1,
@@ -58,7 +63,7 @@ class SegmentWidget(anywidget.AnyWidget):
         self.image = cv.cvtColor(image, cv.COLOR_RGBA2RGB)
         self._image_height = self.image.shape[0]
         self._image_width = self.image.shape[1]
-        self._image_data = self._image_to_base64str(self.image)
+        self._image_data = image_to_base64str(self.image)
 
         self._scale_factor = image_scale
 
@@ -74,8 +79,8 @@ class SegmentWidget(anywidget.AnyWidget):
 
         super().__init__()
 
-    def segmentation_result(self) -> Tuple[np.ndarray, Dict[str, int]]:
-        drawing_rgb = self._base64str_to_image(self._drawing_base64)
+    def segmentation_result(self) -> Tuple[ArrayNxM[np.int64], Dict[str, int]]:
+        drawing_rgb = base64str_to_image(self._drawing_base64)
 
         if self._scale_factor != 1:
             drawing_rgb = cv.resize(
@@ -87,7 +92,7 @@ class SegmentWidget(anywidget.AnyWidget):
         self._validate_drawing(drawing_rgb)
 
         # convert drawing to 2d labels array
-        drawing_hex_array = self._rgb_to_hex_image(drawing_rgb)
+        drawing_hex_array = rgb_to_hex_image(drawing_rgb)
 
         colors = self._colors.copy()
         label_titles = self._label_titles.copy()
@@ -121,14 +126,14 @@ class SegmentWidget(anywidget.AnyWidget):
                 "Black color is forbidden, it is reserved by a background class"
             )
 
-    def _validate_drawing(self, drawing_rgb_array: np.ndarray) -> None:
+    def _validate_drawing(self, drawing_rgb_array: ArrayNxMx3[np.uint8]) -> None:
         if len(drawing_rgb_array.shape) != 3 or drawing_rgb_array.shape[2] != 3:
             raise Exception(
                 f"Exported drawing has shape {drawing_rgb_array.shape}, but expected (N, M, 3)"
             )
 
         # check that drawing colors are valid
-        drawing_hex_array = self._rgb_to_hex_image(drawing_rgb_array)
+        drawing_hex_array = rgb_to_hex_image(drawing_rgb_array)
         drawing_colors_set = set(np.unique(drawing_hex_array))
 
         allowed_colors_set = set(self._colors.copy())
@@ -138,49 +143,3 @@ class SegmentWidget(anywidget.AnyWidget):
             raise Exception(
                 f"Exported drawing contains unexpected colors, {drawing_colors_set=}, {allowed_colors_set=}"
             )
-
-    @staticmethod
-    def _image_to_base64str(image_rgb: np.ndarray) -> str:
-        image_bgr = cv.cvtColor(image_rgb, cv.COLOR_RGB2BGR)
-        retval, buffer_img = cv.imencode(".png", image_bgr)
-        image_base64 = base64.b64encode(buffer_img)
-
-        image_base64_str = "data:image/png;base64," + image_base64.decode()
-        return image_base64_str
-
-    @staticmethod
-    def _base64str_to_image(image_base64: str) -> np.ndarray:
-        if not image_base64.startswith("data:image/png;base64,"):
-            raise ValueError("base64 encoded image is not valid")
-
-        base64_data = image_base64.removeprefix("data:image/png;base64,")
-        base64_decoded = base64.b64decode(base64_data)
-        image_pil = Image.open(io.BytesIO(base64_decoded))
-        image = np.array(image_pil)
-
-        if len(image.shape) != 3 or image.shape[2] != 4:
-            raise Exception(
-                f"Exported drawing conversion to numpy array failed, image_shape={image.shape}, but expected (n, m, 4)"
-            )
-
-        image_rgb = cv.cvtColor(image, cv.COLOR_RGBA2RGB)
-        return image_rgb
-
-    @staticmethod
-    def _rgb_to_hex_image(image: np.ndarray) -> np.ndarray:
-        """
-        Convert rgb numpy array to hex numpy array
-
-        :param image: image data, shape = (N, M, 3), dtype=uint8
-        :return: array with hex colors, shape = (N, M), dtype=str
-        """
-        r_channel = image[:, :, 0]
-        g_channel = image[:, :, 1]
-        b_channel = image[:, :, 2]
-
-        array_to_hex = np.vectorize("{:02x}".format)
-        image_array_hex = np.char.add("#", array_to_hex(r_channel))
-        image_array_hex = np.char.add(image_array_hex, array_to_hex(g_channel))
-        image_array_hex = np.char.add(image_array_hex, array_to_hex(b_channel))
-
-        return image_array_hex
