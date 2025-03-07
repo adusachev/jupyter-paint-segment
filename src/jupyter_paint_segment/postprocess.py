@@ -46,7 +46,7 @@ def get_closest_pixel(
     pixels_set: ArrayNx3[np.uint8],
 ) -> Array3[np.uint8]:
     """
-    Returns closest pixel to target_pixel from a pixel_set.
+    Returns closest pixel to `target_pixel` from a `pixel_set`.
     """
     target_pixel = target_pixel.copy().astype(np.int64)
     pixels_set = pixels_set.copy().astype(np.int64)
@@ -63,8 +63,8 @@ def replace_image_pixel(
     target_pixel: Array3[np.uint8],
 ) -> ArrayNxMx3[np.uint8]:
     """
-    Replaces all source_pixel values on RGB image with target_pixel values.
-    Does not change input image_rgb array, create new.
+    Replaces all `source_pixel` values on RGB image with `target_pixel` values.
+    Does not change input `image_rgb` array, create new.
     """
     image = np.copy(image_rgb)
     image = image_rgb

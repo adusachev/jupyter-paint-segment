@@ -153,14 +153,14 @@ class SegmentWidget(anywidget.AnyWidget):
         )
         return image_postprocessed
 
-    def _validate_drawing(self, drawing_rgb_array: ArrayNxMx3[np.uint8]) -> None:
-        if len(drawing_rgb_array.shape) != 3 or drawing_rgb_array.shape[2] != 3:
+    def _validate_drawing(self, drawing_rgb: ArrayNxMx3[np.uint8]) -> None:
+        if len(drawing_rgb.shape) != 3 or drawing_rgb.shape[2] != 3:
             raise Exception(
-                f"Exported drawing has shape {drawing_rgb_array.shape}, but expected (N, M, 3)"
+                f"Exported drawing has shape {drawing_rgb.shape}, but expected (N, M, 3)"
             )
 
         # check that drawing colors are valid
-        drawing_hex_array = rgb_to_hex_image(drawing_rgb_array)
+        drawing_hex_array = rgb_to_hex_image(drawing_rgb)
         drawing_colors_set = set(np.unique(drawing_hex_array))
 
         allowed_colors_set = set(self._allowed_colors_hex)
