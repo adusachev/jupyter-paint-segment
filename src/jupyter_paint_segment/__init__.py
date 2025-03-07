@@ -1,1 +1,1 @@
-from .segment_widget import SegmentWidget
+from .widget import SegmentWidget
