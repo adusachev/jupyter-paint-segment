@@ -11,6 +11,7 @@ def remove_noisy_pixels(
     Replace all image pixels with closest pixel from allowed pixels set.
     """
     obtained_pixels = unique_image_pixels(image_rgb)
+    # print(f"{obtained_pixels=}")
 
     for pixel in obtained_pixels:
         closest_allowed_pixel = get_closest_pixel(pixel, allowed_pixels)

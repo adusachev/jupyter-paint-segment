@@ -6,8 +6,9 @@ import cv2 as cv
 import matplotlib.colors
 import numpy as np
 import traitlets
-from PIL import Image, ImageColor
+from PIL import ImageColor
 
+from jupyter_paint_segment.postprocess import remove_noisy_pixels
 from jupyter_paint_segment.types import ArrayNx3, ArrayNxM, ArrayNxMx3
 from jupyter_paint_segment.utils import (
     base64str_to_image,
@@ -26,7 +27,7 @@ CSS = REPO_DIR / "js" / "styles.css"
 DEFAULT_COLORS = [
     "#2ca02c",  # cooked asparagus green
     "#d62728",  # brick red
-    "#fefe00",  # yellow
+    "#fefe00",  # just yellow
     "#1f77b4",  # muted blue
     "#ff7f0e",  # safety orange
     "#9467bd",  # muted purple
@@ -104,7 +105,7 @@ class SegmentWidget(anywidget.AnyWidget):
                 interpolation=cv.INTER_NEAREST,
             )
 
-        # drawing_rgb = remove_noisy_pixels
+        drawing_rgb = self._postprocess_drawing(drawing_rgb)
 
         self._validate_drawing(drawing_rgb)
 
@@ -143,6 +144,15 @@ class SegmentWidget(anywidget.AnyWidget):
                 "Black color is forbidden, it is reserved by a background class"
             )
 
+    def _postprocess_drawing(
+        self, drawing_rgb: ArrayNxMx3[np.uint8]
+    ) -> ArrayNxMx3[np.uint8]:
+        image_postprocessed = remove_noisy_pixels(
+            image_rgb=drawing_rgb,
+            allowed_pixels=self._allowed_colors_rgb,
+        )
+        return image_postprocessed
+
     def _validate_drawing(self, drawing_rgb_array: ArrayNxMx3[np.uint8]) -> None:
         if len(drawing_rgb_array.shape) != 3 or drawing_rgb_array.shape[2] != 3:
             raise Exception(
@@ -153,8 +163,7 @@ class SegmentWidget(anywidget.AnyWidget):
         drawing_hex_array = rgb_to_hex_image(drawing_rgb_array)
         drawing_colors_set = set(np.unique(drawing_hex_array))
 
-        allowed_colors_set = set(self._colors.copy())
-        allowed_colors_set.add("#000000")
+        allowed_colors_set = set(self._allowed_colors_hex)
 
         if not drawing_colors_set.issubset(allowed_colors_set):
             raise Exception(
