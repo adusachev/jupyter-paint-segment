@@ -6,9 +6,9 @@ import cv2 as cv
 import matplotlib.colors
 import numpy as np
 import traitlets
-from PIL import Image
+from PIL import Image, ImageColor
 
-from jupyter_paint_segment.types import ArrayNxM, ArrayNxMx3
+from jupyter_paint_segment.types import ArrayNx3, ArrayNxM, ArrayNxMx3
 from jupyter_paint_segment.utils import (
     base64str_to_image,
     image_to_base64str,
@@ -79,8 +79,23 @@ class SegmentWidget(anywidget.AnyWidget):
 
         super().__init__()
 
+    @property
+    def _allowed_colors_hex(self) -> List[str]:
+        colors = self._colors.copy()
+        colors.append("#000000")
+        return colors
+
+    @property
+    def _allowed_colors_rgb(self) -> ArrayNx3[np.uint8]:
+        colors_rgb = [ImageColor.getcolor(hex_color, mode="RGB") for hex_color in self._allowed_colors_hex]  # fmt: skip
+        return np.array(colors_rgb, dtype=np.uint8)
+
+    @property
+    def _drawing_rgb(self) -> ArrayNxMx3[np.uint8]:
+        return base64str_to_image(self._drawing_base64)
+
     def segmentation_result(self) -> Tuple[ArrayNxM[np.int64], Dict[str, int]]:
-        drawing_rgb = base64str_to_image(self._drawing_base64)
+        drawing_rgb = self._drawing_rgb
 
         if self._scale_factor != 1:
             drawing_rgb = cv.resize(
@@ -88,6 +103,8 @@ class SegmentWidget(anywidget.AnyWidget):
                 dsize=(self._image_width, self._image_height),
                 interpolation=cv.INTER_NEAREST,
             )
+
+        # drawing_rgb = remove_noisy_pixels
 
         self._validate_drawing(drawing_rgb)
 
