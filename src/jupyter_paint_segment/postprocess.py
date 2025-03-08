@@ -64,7 +64,7 @@ def replace_image_pixel(
     Replaces all `source_pixel` values on RGB image with `target_pixel` values.
     Does not change input `image_rgb` array, create new.
     """
-    image = np.copy(image_rgb)
+    # image = np.copy(image_rgb)
     image = image_rgb
     source_pixel_r, source_pixel_g, source_pixel_b = source_pixel
     target_pixel_r, target_pixel_g, target_pixel_b = target_pixel
