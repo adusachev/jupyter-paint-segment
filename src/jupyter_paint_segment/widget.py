@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import anywidget
@@ -8,17 +7,10 @@ import numpy as np
 import traitlets
 from PIL import ImageColor
 
+from jupyter_paint_segment.config import CSS_PATH, JS_PATH
 from jupyter_paint_segment.postprocess import remove_noisy_pixels
 from jupyter_paint_segment.types import ArrayNx3, ArrayNxM, ArrayNxMx3
 from jupyter_paint_segment.utils import base64str_to_image, image_to_base64str
-
-REPO_DIR = Path(__file__).parent.parent.parent
-JS_CODE = REPO_DIR / "js" / "paint_widget.js"
-CSS = REPO_DIR / "js" / "styles.css"
-
-# CURRENT_DIR = Path(__file__).parent
-# JS_CODE = CURRENT_DIR / "static" / "paint_widget.js"
-# CSS = CURRENT_DIR / "static" / "styles.css"
 
 DEFAULT_COLORS = [
     "#2ca02c",  # cooked asparagus green
@@ -36,8 +28,8 @@ DEFAULT_COLORS = [
 
 
 class SegmentWidget(anywidget.AnyWidget):
-    _esm = JS_CODE
-    _css = CSS
+    _esm = JS_PATH
+    _css = CSS_PATH
 
     _image_data = traitlets.Unicode().tag(sync=True)
     _image_height = traitlets.Int().tag(sync=True)
