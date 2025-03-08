@@ -115,13 +115,21 @@ function render({ model, el }) {
 
     const scalefactor =  model.get('_scale_factor');
 
-    const BOARD_WIDTH = Math.floor(backgroundImageWidth * scalefactor);
-    const BOARD_HEIGHT = Math.floor(backgroundImageHeight * scalefactor);
+    const BOARD_WIDTH = backgroundImageWidth;
+    const BOARD_HEIGHT = backgroundImageHeight;
     drawingCanvas.width = BOARD_WIDTH;
     drawingCanvas.height = BOARD_HEIGHT;
     backgroundCanvas.width = BOARD_WIDTH;
     backgroundCanvas.height = BOARD_HEIGHT;
-    backgroundCanvas.style.backgroundSize = `${BOARD_WIDTH}px ${BOARD_HEIGHT}px`;
+    
+    const DISPLAY_WIDTH = Math.floor(BOARD_WIDTH * scalefactor);
+    const DISPLAY_HEIGHT = Math.floor(BOARD_HEIGHT * scalefactor);
+    backgroundCanvas.style.backgroundSize = `${DISPLAY_WIDTH}px ${DISPLAY_HEIGHT}px`;
+    backgroundCanvas.style.width = `${DISPLAY_WIDTH}px`;
+    backgroundCanvas.style.height = `${DISPLAY_HEIGHT}px`;
+    drawingCanvas.style.width = `${DISPLAY_WIDTH}px`;
+    drawingCanvas.style.height = `${DISPLAY_HEIGHT}px`;
+
 
     const ctx = drawingCanvas.getContext('2d')
     const ctx2 = backgroundCanvas.getContext('2d')
@@ -154,8 +162,8 @@ function render({ model, el }) {
     let brushStamp = generateBrushStamp(lineWidth, currentColor);
 
     brushCursor.classList.add('circle-brush-cursor');
-    brushCursor.style.width = `${lineWidth}px`;
-    brushCursor.style.height = `${lineWidth}px`
+    brushCursor.style.width = `${lineWidth * scalefactor}px`;
+    brushCursor.style.height = `${lineWidth * scalefactor}px`
 
     let prevMouseX = null;
     let prevMouseY = null;
@@ -280,8 +288,8 @@ function render({ model, el }) {
 
 
     function drawBrush(event) {
-        let currentX = event.offsetX;
-        let currentY = event.offsetY;
+        let currentX = Math.floor(event.offsetX / scalefactor);
+        let currentY = Math.floor(event.offsetY / scalefactor);
         drawLineStamp(
             prevMouseX, prevMouseY, 
             currentX, currentY,
@@ -294,8 +302,8 @@ function render({ model, el }) {
 
 
     function drawEraser(event) {
-        let currentX = event.offsetX;
-        let currentY = event.offsetY;
+        let currentX = Math.floor(event.offsetX / scalefactor);
+        let currentY = Math.floor(event.offsetY / scalefactor);
         drawLineStamp(
             prevMouseX, prevMouseY, 
             currentX, currentY,
@@ -310,11 +318,13 @@ function render({ model, el }) {
     function drawRect(event) {
         ctx.putImageData(snapshot, 0, 0);
         ctx.lineWidth = 1;    
+        let currentX = Math.floor(event.offsetX / scalefactor);
+        let currentY = Math.floor(event.offsetY / scalefactor);
         ctx.fillRect(
             prevMouseX,
             prevMouseY,
-            event.offsetX - prevMouseX,
-            event.offsetY - prevMouseY
+            currentX - prevMouseX,
+            currentY - prevMouseY
         );
         
         ctx.lineWidth = lineWidth;
@@ -346,11 +356,11 @@ function render({ model, el }) {
 
     function startDrawing(event) {
         isDrawing = true;
-        prevMouseX = event.offsetX;
-        prevMouseY = event.offsetY;
+        prevMouseX = Math.floor(event.offsetX / scalefactor);
+        prevMouseY = Math.floor(event.offsetY / scalefactor);
         ctx.strokeStyle = currentColor;
         ctx.fillStyle = currentColor;
-        ctx.lineWidth = lineWidth;
+        ctx.lineWidth = lineWidth / scalefactor;
         ctx.beginPath();
         snapshot = ctx.getImageData(0, 0, BOARD_WIDTH, BOARD_HEIGHT)
     }
@@ -376,8 +386,8 @@ function render({ model, el }) {
 
         brushStamp = generateBrushStamp(lineWidth, currentColor);  // generate brush stamp with new size
 
-        brushCursor.style.width = `${lineWidth}px`;
-        brushCursor.style.height = `${lineWidth}px`;
+        brushCursor.style.width = `${lineWidth * scalefactor}px`;
+        brushCursor.style.height = `${lineWidth * scalefactor}px`;
     }
 
 
@@ -473,8 +483,8 @@ function render({ model, el }) {
     eraserBtn.addEventListener('mousedown', enableEraserTool);
 
     drawingCanvas.addEventListener('mousemove', e => {
-        brushCursor.style.top = `${ e.offsetY - lineWidth/2 }px`;
-        brushCursor.style.left = `${ e.offsetX - lineWidth/2}px`;
+        brushCursor.style.top = `${ e.offsetY - (lineWidth * scalefactor)/2 }px`;
+        brushCursor.style.left = `${ e.offsetX - (lineWidth * scalefactor)/2}px`;
     });
 
     // selected status for color list items

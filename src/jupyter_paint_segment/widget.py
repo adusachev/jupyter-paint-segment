@@ -10,11 +10,7 @@ from PIL import ImageColor
 
 from jupyter_paint_segment.postprocess import remove_noisy_pixels
 from jupyter_paint_segment.types import ArrayNx3, ArrayNxM, ArrayNxMx3
-from jupyter_paint_segment.utils import (
-    base64str_to_image,
-    image_to_base64str,
-    rgb_to_hex_image,
-)
+from jupyter_paint_segment.utils import base64str_to_image, image_to_base64str
 
 REPO_DIR = Path(__file__).parent.parent.parent
 JS_CODE = REPO_DIR / "js" / "paint_widget.js"
@@ -109,14 +105,6 @@ class SegmentWidget(anywidget.AnyWidget):
 
     def segmentation_result(self) -> Tuple[ArrayNxM[np.int64], Dict[str, int]]:
         drawing_rgb = self._drawing_rgb
-
-        if self._scale_factor != 1:
-            drawing_rgb = cv.resize(
-                src=drawing_rgb,
-                dsize=(self._image_width, self._image_height),
-                interpolation=cv.INTER_NEAREST,
-            )
-
         drawing_rgb = self._postprocess_drawing(drawing_rgb)
         self._validate_drawing(drawing_rgb)
 
@@ -172,18 +160,7 @@ class SegmentWidget(anywidget.AnyWidget):
         return image_postprocessed
 
     def _validate_drawing(self, drawing_rgb: ArrayNxMx3[np.uint8]) -> None:
-        if len(drawing_rgb.shape) != 3 or drawing_rgb.shape[2] != 3:
+        if drawing_rgb.shape != self.image.shape:
             raise Exception(
-                f"Exported drawing has shape {drawing_rgb.shape}, but expected (N, M, 3)"
+                f"Exported drawing shape differs from original image shape, drawing_shape={drawing_rgb.shape}, image_shape={self.image.shape}"
             )
-
-        # # check that drawing colors are valid
-        # drawing_hex_array = rgb_to_hex_image(drawing_rgb)
-        # drawing_colors_set = set(np.unique(drawing_hex_array))
-
-        # allowed_colors_set = set(self._allowed_colors_hex)
-
-        # if not drawing_colors_set.issubset(allowed_colors_set):
-        #     raise Exception(
-        #         f"Exported drawing contains unexpected colors, {drawing_colors_set=}, {allowed_colors_set=}"
-        #     )
