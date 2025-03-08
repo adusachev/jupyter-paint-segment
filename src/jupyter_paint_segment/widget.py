@@ -81,15 +81,27 @@ class SegmentWidget(anywidget.AnyWidget):
         super().__init__()
 
     @property
-    def _allowed_colors_hex(self) -> List[str]:
+    def _colors_hex_with_bg(self) -> List[str]:
         colors = self._colors.copy()
-        colors.append("#000000")
+        colors.append("#000000")  # add background
         return colors
 
     @property
-    def _allowed_colors_rgb(self) -> ArrayNx3[np.uint8]:
-        colors_rgb = [ImageColor.getcolor(hex_color, mode="RGB") for hex_color in self._allowed_colors_hex]  # fmt: skip
+    def _colors_rgb_with_bg(self) -> ArrayNx3[np.uint8]:
+        colors_rgb = [ImageColor.getcolor(hex_color, mode="RGB") for hex_color in self._colors_hex_with_bg]  # fmt: skip
         return np.array(colors_rgb, dtype=np.uint8)
+
+    @property
+    def _label_numbers_with_bg(self) -> List[int]:
+        label_numbers = list(range(1, len(self._colors) + 1))
+        label_numbers.append(0)  # add background
+        return label_numbers
+
+    @property
+    def _label_titles_with_bg(self) -> List[str]:
+        label_titles = self._label_titles.copy()
+        label_titles.append("unlabeled_background")  # add background
+        return label_titles
 
     @property
     def _drawing_rgb(self) -> ArrayNxMx3[np.uint8]:
@@ -106,26 +118,32 @@ class SegmentWidget(anywidget.AnyWidget):
             )
 
         drawing_rgb = self._postprocess_drawing(drawing_rgb)
-
         self._validate_drawing(drawing_rgb)
 
-        # convert drawing to 2d labels array
-        drawing_hex_array = rgb_to_hex_image(drawing_rgb)
+        # create 2D label numbers array from obtained drawing
+        labels_array = np.zeros_like(drawing_rgb[:, :, 0], dtype=np.int64)
 
-        colors = self._colors.copy()
-        label_titles = self._label_titles.copy()
-        label_numbers = list(range(1, len(self._colors) + 1))
+        colors_rgb_as_tuple = [tuple(pixel) for pixel in self._colors_rgb_with_bg]
+        map_color_rgb_label_num = dict(
+            zip(colors_rgb_as_tuple, self._label_numbers_with_bg)
+        )
 
-        ## add background label
-        colors.append("#000000")
-        label_numbers.append(0)
-        label_titles.append("unlabeled_background")
+        for pixel_value in colors_rgb_as_tuple:
+            pixel_r, pixel_g, pixel_b = pixel_value
 
-        map_color_label_num = dict(zip(colors, label_numbers))
-        map_label_title_label_num = dict(zip(label_titles, label_numbers))
+            pixel_indexes = np.where(
+                (drawing_rgb[:, :, 0] == pixel_r)
+                & (drawing_rgb[:, :, 1] == pixel_g)
+                & (drawing_rgb[:, :, 2] == pixel_b)
+            )
+            y, x = pixel_indexes
 
-        hex_color_to_label = np.vectorize(map_color_label_num.get)
-        labels_array = hex_color_to_label(drawing_hex_array)
+            labels_array[y, x] = map_color_rgb_label_num[pixel_value]
+
+        # create map with label titles and label numbers
+        map_label_title_label_num = dict(
+            zip(self._label_titles_with_bg, self._label_numbers_with_bg)
+        )
 
         return labels_array, map_label_title_label_num
 
@@ -149,7 +167,7 @@ class SegmentWidget(anywidget.AnyWidget):
     ) -> ArrayNxMx3[np.uint8]:
         image_postprocessed = remove_noisy_pixels(
             image_rgb=drawing_rgb,
-            allowed_pixels=self._allowed_colors_rgb,
+            allowed_pixels=self._colors_rgb_with_bg,
         )
         return image_postprocessed
 
@@ -159,13 +177,13 @@ class SegmentWidget(anywidget.AnyWidget):
                 f"Exported drawing has shape {drawing_rgb.shape}, but expected (N, M, 3)"
             )
 
-        # check that drawing colors are valid
-        drawing_hex_array = rgb_to_hex_image(drawing_rgb)
-        drawing_colors_set = set(np.unique(drawing_hex_array))
+        # # check that drawing colors are valid
+        # drawing_hex_array = rgb_to_hex_image(drawing_rgb)
+        # drawing_colors_set = set(np.unique(drawing_hex_array))
 
-        allowed_colors_set = set(self._allowed_colors_hex)
+        # allowed_colors_set = set(self._allowed_colors_hex)
 
-        if not drawing_colors_set.issubset(allowed_colors_set):
-            raise Exception(
-                f"Exported drawing contains unexpected colors, {drawing_colors_set=}, {allowed_colors_set=}"
-            )
+        # if not drawing_colors_set.issubset(allowed_colors_set):
+        #     raise Exception(
+        #         f"Exported drawing contains unexpected colors, {drawing_colors_set=}, {allowed_colors_set=}"
+        #     )
