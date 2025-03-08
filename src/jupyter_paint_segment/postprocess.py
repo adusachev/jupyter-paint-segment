@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from jupyter_paint_segment.types import Array3, ArrayNx3, ArrayNxMx3
 
@@ -26,18 +27,15 @@ def remove_noisy_pixels(
     return image_rgb
 
 
-def unique_image_pixels(
-    image_rgb: ArrayNxMx3[np.uint8],
-    return_counts: bool = False,
-) -> ArrayNx3[np.uint8]:
+def unique_image_pixels(image_rgb: ArrayNxMx3[np.uint8]) -> ArrayNx3[np.uint8]:
     """
     Returns set of unique pixel colors on image.
     """
-    unique_pixels = np.unique(
-        image_rgb.reshape((-1, 3)),
-        axis=0,
-        return_counts=return_counts,
-    )
+    image_reshaped = image_rgb.reshape((-1, 3))
+    ## optimized solution O(n)
+    unique_pixels = pd.DataFrame(image_reshaped).drop_duplicates().to_numpy()
+    ## slow solution O(n log n)
+    # unique_pixels = np.unique(image_reshaped, axis=0)
     return unique_pixels
 
 
