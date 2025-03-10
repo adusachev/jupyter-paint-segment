@@ -108,11 +108,6 @@ function render({ model, el }) {
     const backgroundImageBase64 = model.get('_image_data');
     backgroundCanvas.style.backgroundImage =  "url(" + backgroundImageBase64 + ")";
 
-    // sync empty drawing canvas image with python
-    let drawingSnapshotBase64 = drawingCanvas.toDataURL("image/png");
-    model.set("_drawing_base64", drawingSnapshotBase64);
-    model.save_changes()
-
     const scalefactor =  model.get('_scale_factor');
 
     const BOARD_WIDTH = backgroundImageWidth;
@@ -130,6 +125,10 @@ function render({ model, el }) {
     drawingCanvas.style.width = `${DISPLAY_WIDTH}px`;
     drawingCanvas.style.height = `${DISPLAY_HEIGHT}px`;
 
+    // sync empty drawing canvas image with python
+    let drawingSnapshotBase64 = drawingCanvas.toDataURL("image/png");
+    model.set("_drawing_base64", drawingSnapshotBase64);
+    model.save_changes()
 
     const ctx = drawingCanvas.getContext('2d')
     const ctx2 = backgroundCanvas.getContext('2d')
