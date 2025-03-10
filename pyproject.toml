@@ -1,10 +1,24 @@
 [tool.poetry]
 name = "jupyter_paint_segment"
 version = "0.0.1"
-description = "Jupyter widget for manual image segmantation"
+description = "A jupyter widget for manual image segmantation"
 authors = ["adusachev <adusachev@yandex.ru>"]
 license = "MIT"
 readme = "README.md"
+homepage = "https://github.com/adusachev/jupyter-paint-segment"
+repository = "https://github.com/adusachev/jupyter-paint-segment"
+keywords = ["jupyter", "widget", "segmentation", "image"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Framework :: Jupyter",
+]
+include = [
+    "LICENSE",
+]
+
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.13"
