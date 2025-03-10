@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import anywidget
@@ -7,7 +8,6 @@ import numpy as np
 import traitlets
 from PIL import ImageColor
 
-from jupyter_paint_segment.config import CSS_PATH, JS_PATH
 from jupyter_paint_segment.postprocess import remove_noisy_pixels
 from jupyter_paint_segment.types import ArrayNx3, ArrayNxM, ArrayNxMx3
 from jupyter_paint_segment.utils import base64str_to_image, image_to_base64str
@@ -25,6 +25,11 @@ DEFAULT_COLORS = [
     "#7f7f7f",  # middle gray
     "#bcbd22",  # curry yellow-green
 ]
+
+
+CURRENT_DIR = Path(__file__).parent
+JS_PATH = CURRENT_DIR / "static" / "paint_widget.js"
+CSS_PATH = CURRENT_DIR / "static" / "styles.css"
 
 
 class SegmentWidget(anywidget.AnyWidget):
