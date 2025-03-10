@@ -19,7 +19,8 @@ Size of brush and eraser can be changed using slider.
 ```sh
 pip install jupyter_paint_segment
 ```
-// TODO
+
+requires: python >= 3.9
 
 
 ---
