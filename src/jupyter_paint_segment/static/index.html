@@ -2,8 +2,8 @@
 <html lang="en-US">
   <head>
     <meta charset="UTF-8" />
-    <title>Canvas</title>
-    <link rel="stylesheet" href="./styles.css">
+    <title>Segmentation Canvas</title>
+    <!-- <link rel="stylesheet" href="./styles.css"> -->
   </head>
   <body>
     <div class="container">
@@ -25,6 +25,7 @@
         <div class="boards">
           <canvas id="background-canvas" width="500" height="300"></canvas>
           <canvas id="drawing-canvas" width="500" height="300"></canvas>
+          <div id="brush-cursor"></div>
         </div>
 
 
@@ -35,7 +36,6 @@
           </div>
 
           <div class="control-buttons">
-            <!-- <button id="save-btn" class="btn">Save</button> -->
             <button id="clear-btn" class="btn">Clear</button>
           </div>
         </div>
