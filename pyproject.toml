@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "jupyter-paint-label"
+name = "jupyter_paint_segment"
 version = "0.0.1"
 description = "Jupyter widget for manual image segmantation"
 authors = ["adusachev <adusachev@yandex.ru>"]
@@ -7,28 +7,23 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.13"
-numpy = "1.26.0"
-matplotlib = "3.8.2"
-ipykernel = "6.29.0"
-ipython = "8.24.0"
-ipython-genutils = "0.2.0"
-ipywidgets = "8.1.5"
-opencv-python = "4.9.0.80"
-pillow = "10.3.0"
-anywidget = "^0.9.14"
-notebook = "7.3.2"
+python = ">=3.8,<3.13"
+anywidget = "0.9.15"
+matplotlib = "3.7.5"
+pillow = "10.4.0"
+opencv-python = "4.11.0.86"
+pandas = "2.0.3"
 
 
 [tool.poetry.group.dev.dependencies]
 nbstripout = "0.8.0"
-pre-commit = "4.0.1"
-isort = "^5.13.2"
-black = {extras = ["jupyter"], version = "^24.10.0"}
-pytest = "^8.3.4"
-mypy = "^1.14.1"
+pre-commit = "3.5.0"
+isort = "5.13.2"
+black = "24.8.0"
+mypy = "1.14.1"
 plotly = "5.20.0"
-pandas = "^2.2.3"
+ipykernel = "6.29.5"
+notebook = "7.3.2"
 
 
 [build-system]
@@ -38,9 +33,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 88
-target-version = ["py311"]
+target-version = ["py38"]
 
 [tool.isort]
 profile = "black"
 line_length = 88
-py_version=311
+py_version=38
